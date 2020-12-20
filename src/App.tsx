@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
-import Demo from './Demo';
+import ExecutorSelector from './syncer/ExecutorSelector';
 
 function App() {
   return (
     <div className="App">
-      <Demo />
+      <ExecutorSelector />
     </div>
   );
 }

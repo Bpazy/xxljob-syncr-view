@@ -3,66 +3,56 @@ import 'antd/dist/antd.css';
 import '../index.css';
 import {TreeSelect} from 'antd';
 import {CascaderOptionType} from 'antd/lib/cascader';
-import {queryExecutors} from '../service';
+import {queryEnvs, queryExecutors} from '../service';
 
-class ExecutorSelector extends React.Component {
-    state: CascaderOptionType = {
+export interface Props {
+    placeholder: string
+}
+
+interface State {
+    value?: string
+    treeData: {
+        title: string
+        key: string
+        value: string
+        id: string | number
+        pId: string | number
+    }[]
+}
+
+class ExecutorSelector extends React.Component<Props, State> {
+    state: State = {
         value: undefined,
-        treeData: [
-            {
-                title: 'test',
-                key: 'test',
-                value: 'test',
-                id: 'test',
-                pId: 0
-            },
-            {
-                title: 'sst',
-                key: 'sst',
-                value: 'sst',
-                id: 'sst',
-                pId: 0
-            },
-            {
-                title: 'sit',
-                key: 'sit',
-                value: 'sit',
-                id: 'sit',
-                pId: 0
-            },
-            {
-                title: 'pre',
-                key: 'pre',
-                value: 'pre',
-                id: 'pre',
-                pId: 0
-            },
-            {
-                title: 'prod',
-                key: 'prod',
-                value: 'prod',
-                id: 'prod',
-                pId: 0
-            },
-            {
-                title: 'trial',
-                key: 'trial',
-                value: 'trial',
-                id: 'trial',
-                pId: 0
-            },
-        ],
+        treeData: [],
     };
 
+    constructor(props: Props) {
+        super(props);
+        queryEnvs().then(d => {
+            this.setState({
+                treeData: d.data
+                    .map(env => ({
+                        title: env,
+                        key: env,
+                        value: env,
+                        id: env,
+                        pId: 0
+                    }))
+            });
+        });
+    }
+
+
     // @ts-ignore
-    onChange = value => {
+    onChange = (value, b, c) => {
+        console.log(value);
+        console.log(b);
+        console.log(c);
         this.setState({value});
     };
 
     loadExecutors = async (treeNode: CascaderOptionType) => {
-        console.log('invoking');
         const executors = (await queryExecutors(treeNode.key)).data;
-        console.log('invoked');
 
         const leafs = [];
         for (const executor of executors) {
@@ -71,14 +61,15 @@ class ExecutorSelector extends React.Component {
                 pId: treeNode.id,
                 value: executor.id,
                 title: executor.name,
-                isLeaf: true,
+                key: executor.name,
+                isLeaf: true
             });
         }
 
         this.setState({
             treeData: this.state.treeData.concat(leafs),
         });
-    }
+    };
 
     render() {
         const {treeData} = this.state;
@@ -86,9 +77,8 @@ class ExecutorSelector extends React.Component {
             <TreeSelect
                 treeDataSimpleMode
                 style={{width: '15%'}}
-                value={this.state.value}
-                dropdownStyle={{ overflow: 'auto'}}
-                placeholder="Please select"
+                dropdownStyle={{overflow: 'auto'}}
+                placeholder={this.props.placeholder}
                 onChange={this.onChange}
                 loadData={this.loadExecutors}
                 treeData={treeData}

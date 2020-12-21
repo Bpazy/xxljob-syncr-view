@@ -5,7 +5,8 @@ import ExecutorSelector from './syncer/ExecutorSelector';
 function App() {
   return (
     <div className="App">
-      <ExecutorSelector />
+      <ExecutorSelector placeholder={"请输入源执行器"}/>
+      <ExecutorSelector placeholder={"请输入目标执行器"}/>
     </div>
   );
 }

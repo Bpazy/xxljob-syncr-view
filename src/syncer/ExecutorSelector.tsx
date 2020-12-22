@@ -5,8 +5,9 @@ import {TreeSelect} from 'antd';
 import {CascaderOptionType} from 'antd/lib/cascader';
 import {queryEnvs, queryExecutors} from '../service';
 
-export interface Props {
-    placeholder: string
+interface Props {
+    tip: string
+    selectorPlaceholder: string
 }
 
 interface State {
@@ -17,6 +18,7 @@ interface State {
         value: string
         id: string | number
         pId: string | number
+        disabled: boolean
     }[]
 }
 
@@ -36,7 +38,8 @@ class ExecutorSelector extends React.Component<Props, State> {
                         key: env,
                         value: env,
                         id: env,
-                        pId: 0
+                        pId: 0,
+                        disabled: true
                     }))
             });
         });
@@ -44,10 +47,7 @@ class ExecutorSelector extends React.Component<Props, State> {
 
 
     // @ts-ignore
-    onChange = (value, b, c) => {
-        console.log(value);
-        console.log(b);
-        console.log(c);
+    onChange = (value) => {
         this.setState({value});
     };
 
@@ -59,10 +59,11 @@ class ExecutorSelector extends React.Component<Props, State> {
             leafs.push({
                 id: executor.id,
                 pId: treeNode.id,
-                value: executor.id,
+                value: executor.name,
                 title: executor.name,
                 key: executor.name,
-                isLeaf: true
+                isLeaf: true,
+                disabled: false
             });
         }
 
@@ -74,15 +75,18 @@ class ExecutorSelector extends React.Component<Props, State> {
     render() {
         const {treeData} = this.state;
         return (
-            <TreeSelect
-                treeDataSimpleMode
-                style={{width: '15%'}}
-                dropdownStyle={{overflow: 'auto'}}
-                placeholder={this.props.placeholder}
-                onChange={this.onChange}
-                loadData={this.loadExecutors}
-                treeData={treeData}
-            />
+            <>
+                <span>{this.props.tip}: </span>
+                <TreeSelect
+                    treeDataSimpleMode
+                    style={{width: '200px'}}
+                    dropdownStyle={{overflow: 'auto'}}
+                    placeholder={this.props.selectorPlaceholder}
+                    onChange={this.onChange}
+                    loadData={this.loadExecutors}
+                    treeData={treeData}
+                />
+            </>
         );
     }
 }
